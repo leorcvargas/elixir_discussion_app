@@ -4,6 +4,10 @@ defmodule Discuss.Topics do
 
   alias Discuss.Topics.Topic
 
+  def show_all_topics() do
+    Repo.all(Topic)
+  end
+
   def create_topic(attrs \\ %{}) do
     %Topic{}
     |> Topic.changeset(attrs)
