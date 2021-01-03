@@ -30,7 +30,7 @@ defmodule DiscussWeb.TopicController do
   def edit(conn, %{"id" => topic_id}) do
     {topic, changeset} = Topics.get_topic_and_changeset_by_id(topic_id)
 
-    render conn, "edit.html", changeset: changeset, topic: topic
+    render(conn, "edit.html", changeset: changeset, topic: topic)
   end
 
   def update(conn, %{"id" => topic_id, "topic" => topic}) do
@@ -41,8 +41,17 @@ defmodule DiscussWeb.TopicController do
         conn
         |> put_flash(:info, "Topic updated")
         |> redirect(to: Routes.topic_path(conn, :index))
+
       {:error, changeset} ->
         render(conn, "edit.html", changeset: changeset, topic: old_topic)
     end
+  end
+
+  def delete(conn, %{"id" => topic_id}) do
+    Topics.delete(topic_id)
+
+    conn
+    |> put_flash(:info, "Topic Deleted")
+    |> redirect(to: Routes.topic_path(conn, :index))
   end
 end

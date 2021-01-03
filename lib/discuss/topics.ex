@@ -34,4 +34,9 @@ defmodule Discuss.Topics do
 
     {result, old_topic}
   end
+
+  def delete(id) do
+    Repo.get!(Topic, id)
+    |> Repo.delete!()
+  end
 end
