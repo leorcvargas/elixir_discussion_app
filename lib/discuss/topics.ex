@@ -13,4 +13,25 @@ defmodule Discuss.Topics do
     |> Topic.changeset(attrs)
     |> Repo.insert()
   end
+
+  def get_by_id(id) do
+    Repo.get(Topic, id)
+  end
+
+  def get_topic_and_changeset_by_id(id) do
+    topic = get_by_id(id)
+    changeset = Topic.changeset(topic)
+
+    {topic, changeset}
+  end
+
+  def update(id, attrs \\ %{}) do
+    old_topic = get_by_id(id)
+
+    result =
+      Topic.changeset(old_topic, attrs)
+      |> Repo.update()
+
+    {result, old_topic}
+  end
 end
