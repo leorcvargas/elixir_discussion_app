@@ -1,5 +1,6 @@
 defmodule DiscussWeb.Router do
   use DiscussWeb, :router
+  require Ueberauth
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -19,6 +20,13 @@ defmodule DiscussWeb.Router do
     resources "/", TopicController
   end
 
+  scope "/auth", DiscussWeb do
+    pipe_through :browser
+
+    get "/:provider", AuthController, :request
+    get "/:provider/callback", AuthController, :callback
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", DiscussWeb do
   #   pipe_through :api
@@ -34,7 +42,7 @@ defmodule DiscussWeb.Router do
   if Mix.env() in [:dev, :test] do
     import Phoenix.LiveDashboard.Router
 
-    scope "/" do
+    scope "/admin" do
       pipe_through :browser
       live_dashboard "/dashboard", metrics: DiscussWeb.Telemetry
     end
