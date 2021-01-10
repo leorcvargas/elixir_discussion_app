@@ -4,13 +4,14 @@ defmodule DiscussWeb.TopicController do
   alias Discuss.Topics
   alias Discuss.Topics.Topic
 
-  plug DiscussWeb.Plugs.RequireAuth when action in [
-    :new,
-    :create,
-    :edit,
-    :update,
-    :delete
-  ]
+  plug DiscussWeb.Plugs.RequireAuth
+       when action in [
+              :new,
+              :create,
+              :edit,
+              :update,
+              :delete
+            ]
 
   def index(conn, _params) do
     topics = Topics.show_all_topics()
@@ -25,7 +26,7 @@ defmodule DiscussWeb.TopicController do
   end
 
   def create(conn, %{"topic" => topic}) do
-    case Topics.create_topic(topic) do
+    case Topics.create_topic(conn.assigns.user, topic) do
       {:ok, _topic} ->
         conn
         |> put_flash(:info, "Topic created")
