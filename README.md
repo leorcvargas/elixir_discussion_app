@@ -1,5 +1,7 @@
 # Discuss
 
+Project based on [this](https://www.udemy.com/course/the-complete-elixir-and-phoenix-bootcamp-and-tutorial/) course by Stephen Grider.
+
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
