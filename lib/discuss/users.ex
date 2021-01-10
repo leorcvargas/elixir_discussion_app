@@ -18,4 +18,8 @@ defmodule Discuss.Users do
         {:ok, user}
     end
   end
+
+  def get_by_id(user_id) do
+    Repo.get(User, user_id)
+  end
 end
