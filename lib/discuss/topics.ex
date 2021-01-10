@@ -37,6 +37,10 @@ defmodule Discuss.Topics do
     {result, old_topic}
   end
 
+  def does_user_own_topic?(user_id, topic_id) do
+    Repo.get(Topic, topic_id).user_id === user_id
+  end
+
   def delete(id) do
     Repo.get!(Topic, id)
     |> Repo.delete!()

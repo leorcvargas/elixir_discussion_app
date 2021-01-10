@@ -13,6 +13,8 @@ defmodule DiscussWeb.TopicController do
               :delete
             ]
 
+  plug :check_topic_owner when action in [:update, :edit, :delete]
+
   def index(conn, _params) do
     topics = Topics.show_all_topics()
 
@@ -63,5 +65,20 @@ defmodule DiscussWeb.TopicController do
     conn
     |> put_flash(:info, "Topic Deleted")
     |> redirect(to: Routes.topic_path(conn, :index))
+  end
+
+  defp check_topic_owner(conn, _params) do
+    %{params: %{"id" => topic_id}} = conn
+
+    case Topics.does_user_own_topic?(conn.assigns.user.id, topic_id) do
+      true ->
+        conn
+
+      false ->
+        conn
+        |> put_flash(:error, "You can't do that")
+        |> redirect(to: Routes.topic_path(conn, :index))
+        |> halt()
+    end
   end
 end
