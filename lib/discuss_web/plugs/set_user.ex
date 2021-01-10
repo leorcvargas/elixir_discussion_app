@@ -1,8 +1,6 @@
 defmodule DiscussWeb.Plugs.SetUser do
   import Plug.Conn
-  import Phoenix.Controller
 
-  alias Dicuss.Router.Helpers
   alias Discuss.Users
 
   def init(_params) do
