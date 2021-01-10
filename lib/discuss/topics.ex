@@ -17,7 +17,7 @@ defmodule Discuss.Topics do
   end
 
   def get_by_id(id) do
-    Repo.get(Topic, id)
+    Repo.get!(Topic, id)
   end
 
   def get_topic_and_changeset_by_id(id) do
