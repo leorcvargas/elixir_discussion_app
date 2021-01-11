@@ -5,24 +5,25 @@ defmodule DiscussWeb.Channels.Comments do
 
   def join("comments:" <> topic_id, _auth_params, socket) do
     parsed_topic_id = String.to_integer(topic_id)
-    topic = Topics.get_by_id(parsed_topic_id)
+    topic = Topics.get_by_id_and_load_full_comments(parsed_topic_id)
 
-    {:ok, %{}, assign(socket, :topic, topic)}
+    response = DiscussWeb.TopicView.render("topic.json", topic: topic)
+
+    {:ok, response, assign(socket, :topic, topic)}
   end
 
   def handle_in("comment:add", %{"content" => content}, socket) do
     topic = socket.assigns.topic
+    user_id = socket.assigns.user_id
 
-    {result, changeset} = Comments.create(topic, %{content: content})
-
-    case result do
-      {:ok, _comment} ->
+    case Comments.create(topic, user_id, %{content: content}) do
+      {:ok, comment} ->
+        response = %{comment: DiscussWeb.CommentView.render("show.json", comment: comment)}
+        broadcast!(socket, "comments:#{topic.id}:new", response)
         {:reply, :ok, socket}
 
-      {:error, _reason} ->
-        {:reply, {:error, %{errors: changeset}}, socket}
+      {:error, reason} ->
+        {:reply, {:error, reason}, socket}
     end
-
-    {:reply, :ok, socket}
   end
 end

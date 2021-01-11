@@ -20,6 +20,11 @@ defmodule Discuss.Topics do
     Repo.get!(Topic, id)
   end
 
+  def get_by_id_and_load_full_comments(id) do
+    get_by_id(id)
+    |> Repo.preload([:user, comments: [:user]])
+  end
+
   def get_topic_and_changeset_by_id(id) do
     topic = get_by_id(id)
     changeset = Topic.changeset(topic)

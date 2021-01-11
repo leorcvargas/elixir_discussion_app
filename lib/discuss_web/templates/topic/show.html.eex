@@ -1,19 +1,67 @@
 <h5><%= @topic.title %></h5>
 
 <div class="input-field">
+  <div class="comments-wrapper">
+    <h6>Comments</h6>
+    <ul id="comments" class="collection"></ul>
+  </div>
+
   <textarea class="materialize-textarea" id="comment-input"></textarea>
   <button class="btn" id="add-comment-btn">Add Comment</button>
 </div>
 
 <script>
+  const createCommentTemplate = (comment) => {
+    const name = comment.user.name || 'Anonymous';
+
+    return `
+      <li id="comment-${comment.id}" class="collection-item">
+        ${comment.content}
+        <div class="secondary-content">
+          ${name}
+        </div>
+      </li>
+    `;
+  }
+
+  const renderComments = (comments) => {
+    const renderedComments = comments
+      .map(createCommentTemplate)
+      .join('');
+
+    const commentsWrapper = document.getElementById("comments");
+    commentsWrapper.innerHTML = renderedComments;
+  };
+
+  const renderComment = comment => {
+    const commentTemplate = createCommentTemplate(comment);
+
+    const commentsWrapper = document.getElementById("comments");
+    commentsWrapper.innerHTML += commentTemplate;
+  };
+
+  const joinChannel = (channel, topicId) => {
+    channel
+      .join()
+      .receive("ok", (resp) => {
+        renderComments(resp.comments);
+      })
+      .receive("error", resp => { console.log("Unable to join", resp) });
+
+    channel.on(`comments:${topicId}:new`, ({ comment }) => {
+      renderComment(comment);
+    });
+  };
+
   const onLoad = () => {
-    const channel = window.joinTopicChannel(<%= @topic.id %>);
-    const button = document.querySelector("#add-comment-btn");
+    const channel = window.getTopicChannel(<%= @topic.id %>);
+    joinChannel(channel, <%= @topic.id %>);
 
+    const button = document.getElementById("add-comment-btn");
     button.addEventListener('click', () => {
-      const input = document.querySelector("#comment-input");
-
+      const input = document.getElementById("comment-input");
       channel.push("comment:add", { content: input.value });
+      input.value = "";
     });
   };
 

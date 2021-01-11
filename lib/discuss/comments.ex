@@ -5,14 +5,18 @@ defmodule Discuss.Comments do
   alias Discuss.Comments.Comment
   alias Discuss.Repo
 
-  def create(topic, attrs \\ %{}) do
+  def create(topic, user_id, attrs \\ %{}) do
     changeset =
       topic
-      |> build_assoc(:comments)
+      |> build_assoc(:comments, user_id: user_id)
       |> Comment.changeset(attrs)
 
-    result = Repo.insert(changeset)
-
-    {result, changeset}
+    case Repo.insert(changeset) do
+      {:ok, comment} ->
+        comment_with_user = comment |> Repo.preload(:user)
+        {:ok, comment_with_user}
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 end
